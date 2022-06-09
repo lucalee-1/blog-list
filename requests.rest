@@ -1,0 +1,22 @@
+post http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+"title": "my blog 2",
+"author": "Me 2",
+"url": "me.com",
+"likes": "4"
+}
+
+###
+
+put http://localhost:3001/api/notes/629f108b994f375aa446c0af
+Content-Type: application/json
+
+{
+"content": "VS Note 2",
+"important": false
+}
+
+###
+delete http://localhost:3001/api/notes/629f1212a3f5174f69a38f6b

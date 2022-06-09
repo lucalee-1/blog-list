@@ -1,0 +1,6 @@
+node_modules
+.vscode
+.env
+request.rest
+.eslintrc.js
+eslintignore
