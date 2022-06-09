@@ -2,10 +2,10 @@ post http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-"title": "my blog 2",
-"author": "Me 2",
+"title": "my blog 7",
+"author": "Me 7",
 "url": "me.com",
-"likes": "4"
+"likes": 5
 }
 
 ###
