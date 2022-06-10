@@ -19,8 +19,22 @@ const favoriteBlog = (blogs) => {
   return blogs.filter((blog) => blog.likes === mostLikes)[0];
 };
 
+const mostBlogs = (blogs) => {
+  if (!Array.isArray(blogs) || !blogs.length) {
+    return null;
+  }
+  const counts = blogs.reduce((sum, blog) => {
+    sum[blog.author] = (sum[blog.author] || 0) + 1;
+    return sum;
+  }, {});
+  const maxCount = Math.max(...Object.values(counts));
+  const topAuthor = Object.keys(counts).filter((k) => counts[k] === maxCount);
+  return { author: topAuthor[0], blogs: maxCount };
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };
