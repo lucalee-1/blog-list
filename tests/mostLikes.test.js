@@ -1,6 +1,6 @@
-const { mostBlogs } = require('../utils/list_helper');
+const { mostLikes } = require('../utils/list_helper');
 
-describe('most blogs', () => {
+describe('most likes', () => {
   const emptyList = [];
   const listWithOneBlog = [
     {
@@ -64,21 +64,21 @@ describe('most blogs', () => {
   ];
 
   test('of empty list is null', () => {
-    const result = mostBlogs(emptyList);
+    const result = mostLikes(emptyList);
     expect(result).toBe(null);
   });
-  test('when list has only one blog, equals that blog', () => {
-    const result = mostBlogs(listWithOneBlog);
+  test('when list has only one blog, equals the likes of that', () => {
+    const result = mostLikes(listWithOneBlog);
     expect(result).toEqual({
       author: 'Edsger W. Dijkstra',
-      blogs: 1,
+      likes: 5,
     });
   });
   test('of a bigger list is calculated right', () => {
-    const result = mostBlogs(listWithMultipleBlogs);
+    const result = mostLikes(listWithMultipleBlogs);
     expect(result).toEqual({
-      author: 'Robert C. Martin',
-      blogs: 3,
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     });
   });
 });

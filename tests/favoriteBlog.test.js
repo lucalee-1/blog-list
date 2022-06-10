@@ -63,7 +63,7 @@ describe('favorite blog', () => {
     },
   ];
 
-  test('of empty list is zero', () => {
+  test('of empty list is undefined', () => {
     const result = favoriteBlog(emptyList);
     expect(result).toEqual(undefined);
   });
