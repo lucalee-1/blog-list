@@ -31,3 +31,24 @@ test('id is returned for each blog', async () => {
   const res = await api.get('/api/blogs');
   res.body.forEach((blog) => expect(blog.id).toBeDefined());
 });
+
+test('a blog can be added', async () => {
+  const newBlog = {
+    title: 'React is cool',
+    author: 'Lee',
+    url: 'https://reactiscool.com/',
+    likes: 10,
+  };
+  const receivedBlog = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await api.get('/api/blogs');
+  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length + 1);
+  expect(blogsAtEnd.body).toContainEqual(receivedBlog.body);
+
+  const titles = blogsAtEnd.body.map((blog) => blog.title);
+  expect(titles).toContain(newBlog.title);
+});
