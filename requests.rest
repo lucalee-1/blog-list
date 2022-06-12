@@ -20,3 +20,15 @@ Content-Type: application/json
 
 ###
 delete http://localhost:3001/api/notes/629f1212a3f5174f69a38f6b
+
+### 
+post http://localhost:8003/api/users
+Content-Type: application/json
+
+ {
+ "username": "noname",
+ "password": "user1password"
+ }
+
+###
+get http://localhost:8003/api/users
