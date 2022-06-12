@@ -73,3 +73,15 @@ test('a blog missing title and url properties is not added', async () => {
   const blogsAtEnd = await api.get('/api/blogs');
   expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length);
 });
+
+describe('deletion of a blog', () => {
+  test('a blog can be deleted', async () => {
+    const blogsAtStart = await api.get('/api/blogs');
+    const blogToDelete = blogsAtStart.body[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await api.get('/api/blogs');
+    expect(blogsAtEnd.body).toHaveLength(blogsAtStart.body.length - 1);
+  });
+});
