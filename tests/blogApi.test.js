@@ -52,3 +52,24 @@ test('a blog can be added', async () => {
   const titles = blogsAtEnd.body.map((blog) => blog.title);
   expect(titles).toContain(newBlog.title);
 });
+
+test('a missing likes property defaults to 0', async () => {
+  const newBlog = {
+    title: 'React is cool',
+    author: 'Lee',
+    url: 'https://reactiscool.com/',
+  };
+
+  const receivedBlog = await api.post('/api/blogs').send(newBlog);
+  expect(receivedBlog.body.likes).toBe(0);
+});
+
+test('a blog missing title and url properties is not added', async () => {
+  const newBlog = {
+    author: 'Lee',
+    likes: 10,
+  };
+  await api.post('/api/blogs').send(newBlog).expect(400);
+  const blogsAtEnd = await api.get('/api/blogs');
+  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length);
+});
