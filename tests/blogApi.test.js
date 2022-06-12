@@ -23,6 +23,11 @@ test('blogs are returned as json', async () => {
 });
 
 test('all blogs are returned', async () => {
-  const res = await api.get('/api/blogs');  
+  const res = await api.get('/api/blogs');
   expect(res.body).toHaveLength(helper.initialBlogs.length);
+});
+
+test('id is returned for each blog', async () => {
+  const res = await api.get('/api/blogs');
+  res.body.forEach((blog) => expect(blog.id).toBeDefined());
 });
