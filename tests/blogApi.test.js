@@ -34,7 +34,7 @@ describe('when there are initially some blogs saved', () => {
   });
 });
 
-describe('when creating new blog entries', () => {
+describe('creation of a new blog entry', () => {
   test('a blog can be added', async () => {
     const newBlog = {
       title: 'React is cool',
@@ -42,7 +42,7 @@ describe('when creating new blog entries', () => {
       url: 'https://reactiscool.com/',
       likes: 10,
     };
-    const receivedBlog = await api
+    const createdBlog = await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
@@ -50,7 +50,7 @@ describe('when creating new blog entries', () => {
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
-    expect(blogsAtEnd).toContainEqual(receivedBlog.body);
+    expect(blogsAtEnd).toContainEqual(createdBlog.body);
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain(newBlog.title);
@@ -78,17 +78,54 @@ describe('when creating new blog entries', () => {
   });
 });
 
-describe('deletion of a blog', () => {
+describe('update of a blog entry', () => {
+  test('a blog can be updated', async () => {
+    const update = {
+      title: 'React patterns 2.0',
+      author: 'Mark Chan',
+      url: 'https://updatedreactpatterns.com/',
+      likes: 8,
+    };
+
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const updatedBlog = await api.put(`/api/blogs/${blogToUpdate.id}`).send(update).expect(200);
+    expect(updatedBlog.body.id).toBe(blogToUpdate.id);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    titles = blogsAtEnd.map(blog => blog.title)
+    expect(titles).toContain(update.title);
+  });
+  test('extra properties are not added', async () => {
+    const update = {
+      title: 'React patterns 2.0',
+      author: 'Mark Chan',
+      url: 'https://updatedreactpatterns.com/',
+      likes: 8,
+      extraField: 'extra',
+    };
+
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(update).expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    blogsAtEnd.forEach((blog) => expect(blog).not.toHaveProperty('extraField'));  })
+});
+
+describe('deletion of a blog entry', () => {
   test('a blog can be deleted', async () => {
-    const blogsAtStart = await api.get('/api/blogs');
-    const blogToDelete = blogsAtStart.body[0];
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
 
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.body.length - 1);
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
 
     const title = blogsAtEnd.map((r) => r.title);
-    expect(title).not.toContain(blogToDelete.title)
+    expect(title).not.toContain(blogToDelete.title);
   });
 });
