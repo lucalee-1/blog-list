@@ -10,12 +10,13 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhb
 
 ###
 
-get http://localhost:8001/api/blogs
+get http://localhost:3001/api/blogs/
 
 
 ###
-put http://localhost:3001/api/notes/629f108b994f375aa446c0af
+put http://localhost:3001/api/blogs/62ae7c89d19bb007169b8c01
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYxMDkzOH0.4G9maRYLKnojxQDdwZEo4IZEwXNwZtVVSwA2q09-_bM
 
 {
 "content": "VS Note 2",
@@ -23,14 +24,17 @@ Content-Type: application/json
 }
 
 ###
-delete http://localhost:3001/api/notes/629f1212a3f5174f69a38f6b
+delete http://localhost:3001/api/blogs/62ae7ff2641fe3e982cc1d7d
+Authorization: bearer eybGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwNDMwNH0.pEUtgQkMmWnJGuIQVsi2fFNG-0Jnbb0tA9KtoulBNBU
+
+{"title": "my edited post"}
 
 ### 
 post http://localhost:3001/api/users
 Content-Type: application/json
 
  {
- "username": "valid user",
+ "username": "valid user2",
  "name": "Valid user",
  "password": "user1password"
  }

@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+const bcrypt = require('bcrypt');
 const helper = require('./testHelper');
 const app = require('../app');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -35,22 +37,42 @@ describe('when there are initially some blogs saved', () => {
 });
 
 describe('creation of a new blog entry', () => {
+  const loginHelper = async () => {
+    await User.deleteMany({});
+    const passwordHash = await bcrypt.hash('sekret', 10);
+    const user = new User({ username: 'default', passwordHash });
+    await user.save();
+
+    const loginData = {
+      username: 'default',
+      password: 'sekret'
+    };
+
+     const res = await api.post('/api/login').send(loginData);
+     console.log('BODY',res.body);
+     return token = res.body.token
+  };
   test('a blog can be added', async () => {
+    const token = await loginHelper()
+    console.log("This IS TOKEN", token)
     const newBlog = {
       title: 'React is cool',
       author: 'Lee',
       url: 'https://reactiscool.com/',
       likes: 10,
     };
+      
     const createdBlog = await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
+    console.log("CREATED BLOG", createdBlog.body)
+
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
-    expect(blogsAtEnd).toContainEqual(createdBlog.body);
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain(newBlog.title);
@@ -94,7 +116,7 @@ describe('update of a blog entry', () => {
     expect(updatedBlog.body.id).toBe(blogToUpdate.id);
 
     const blogsAtEnd = await helper.blogsInDb();
-    titles = blogsAtEnd.map(blog => blog.title)
+    titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain(update.title);
   });
   test('extra properties are not added', async () => {
@@ -112,7 +134,8 @@ describe('update of a blog entry', () => {
     await api.put(`/api/blogs/${blogToUpdate.id}`).send(update).expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
-    blogsAtEnd.forEach((blog) => expect(blog).not.toHaveProperty('extraField'));  })
+    blogsAtEnd.forEach((blog) => expect(blog).not.toHaveProperty('extraField'));
+  });
 });
 
 describe('deletion of a blog entry', () => {

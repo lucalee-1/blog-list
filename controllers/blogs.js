@@ -47,33 +47,47 @@ blogsRouter.post('/', async (req, res, next) => {
   }
 });
 
-blogsRouter.put('/:id', async (req, res, next) => {
-  const blog = {
+blogsRouter.put('/:id', async (req, res, next) => {  
+  const blogContent = {
     title: req.body.title,
     author: req.body.author,
     url: req.body.url,
     likes: req.body.likes || '0',
   };
-  const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, {
-    new: true,
-    runValidators: true,
-    context: 'query',
-  });
-  res.json(updatedBlog);
-});
-
-blogsRouter.delete('/:id', async (req, res, next) => {
   try {
     const token = getTokenFrom(req);
     const decodedToken = jwt.verify(token, process.env.SECRET);
     if (!decodedToken.id) {
       return res.status(401).json({ error: 'token missing or invalid' });
     }
-   
     const blog = await Blog.findById(req.params.id)
-    
     if (blog.user.toString() !== decodedToken.id){
-      return res.status(401).json({ error: 'wrong user, only the original poster can delete a blog' })
+      return res.status(401).json({ error: 'wrong user, only the original creator can edit a blog' })
+    }  
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blogContent, {
+      new: true,
+      runValidators: true,
+      context: 'query',
+    });
+    res.json(updatedBlog);
+  } catch (error) {
+    next(error)
+  }
+ 
+});
+
+blogsRouter.delete('/:id', async (req, res, next) => {
+  const token = getTokenFrom(req);
+   
+  try {
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'token missing or invalid' });
+    }
+    const blog = await Blog.findById(req.params.id)
+
+    if (blog.user.toString() !== decodedToken.id){
+      return res.status(401).json({ error: 'wrong user, only the original creator can delete a blog' })
     }  
     await Blog.findByIdAndDelete(req.params.id);
     res.status(204).end();
