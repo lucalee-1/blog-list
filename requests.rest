@@ -1,11 +1,11 @@
-post http://localhost:8001/api/blogs
+post http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwMjI1MX0.rhUAdQ9lsHlu8Unz1fqb8sVtD7Px7_boGyXY9l9yKKU
 
 {
-"title": "my blog 9999",
-"author": "Me 79",
-"url": "me.com",
-"userId": "62a69d56183f7c2c6b53471d"
+"title": "my authorized post",
+"author": "Me 2",
+"url": "me.com"
 }
 
 ###
@@ -26,14 +26,23 @@ Content-Type: application/json
 delete http://localhost:3001/api/notes/629f1212a3f5174f69a38f6b
 
 ### 
-post http://localhost:8001/api/users
+post http://localhost:3001/api/users
 Content-Type: application/json
 
  {
- "username": "user",
- "name": "User User",
+ "username": "valid user",
+ "name": "Valid user",
  "password": "user1password"
  }
 
 ###
-get http://localhost:8001/api/users
+get http://localhost:3001/api/users
+
+###
+post http://localhost:3001/api/login
+Content-Type: application/json
+
+ {
+ "username": "valid user",
+ "password": "user1password"
+ }
