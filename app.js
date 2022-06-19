@@ -21,6 +21,10 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send(`<p>Supported routes are: /api/blogs, /api/users, /api/login </p>`)
+});
+
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
