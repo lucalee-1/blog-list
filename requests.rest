@@ -1,9 +1,9 @@
 post http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwMjI1MX0.rhUAdQ9lsHlu8Unz1fqb8sVtD7Px7_boGyXY9l9yKKU
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwMjI1MX0.rhUAdQ9lsHlu8Unz1fqb8sVtD7Px7_boGyXY9l9yKKU
 
 {
-"title": "my authorized post",
+"title": "my authorized post 3",
 "author": "Me 2",
 "url": "me.com"
 }
