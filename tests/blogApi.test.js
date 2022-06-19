@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
-const bcrypt = require('bcrypt');
 const helper = require('./testHelper');
 const app = require('../app');
-
 const api = supertest(app);
 const Blog = require('../models/blog');
-const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -37,39 +34,21 @@ describe('when there are initially some blogs saved', () => {
 });
 
 describe('creation of a new blog entry', () => {
-  const loginHelper = async () => {
-    await User.deleteMany({});
-    const passwordHash = await bcrypt.hash('sekret', 10);
-    const user = new User({ username: 'default', passwordHash });
-    await user.save();
-
-    const loginData = {
-      username: 'default',
-      password: 'sekret'
-    };
-
-     const res = await api.post('/api/login').send(loginData);
-     console.log('BODY',res.body);
-     return token = res.body.token
-  };
   test('a blog can be added', async () => {
-    const token = await loginHelper()
-    console.log("This IS TOKEN", token)
+    const token = await helper.login();
     const newBlog = {
       title: 'React is cool',
       author: 'Lee',
       url: 'https://reactiscool.com/',
       likes: 10,
     };
-      
+
     const createdBlog = await api
       .post('/api/blogs')
       .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
-
-    console.log("CREATED BLOG", createdBlog.body)
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
@@ -79,22 +58,39 @@ describe('creation of a new blog entry', () => {
   });
 
   test('a missing likes property defaults to 0', async () => {
+    const token = await helper.login();
     const newBlog = {
       title: 'React is cool',
       author: 'Lee',
       url: 'https://reactiscool.com/',
     };
 
-    const receivedBlog = await api.post('/api/blogs').send(newBlog);
+    const receivedBlog = await api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
+      .send(newBlog);
     expect(receivedBlog.body.likes).toBe(0);
   });
 
   test('a blog missing title and url properties is not added', async () => {
+    const token = await helper.login();
     const newBlog = {
       author: 'Lee',
       likes: 10,
     };
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api.post('/api/blogs').send(newBlog).set('Authorization', `bearer ${token}`).expect(400);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+  });
+  test('will fail if valid token not provided', async () => {
+    const token = await helper.login();
+    const newBlog = {
+      title: 'React is cool',
+      author: 'Lee',
+      url: 'https://reactiscool.com/',
+      likes: 10,
+    };
+    await api.post('/api/blogs').send(newBlog).set('Authorization', 'bearer 12345').expect(401);
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
@@ -102,6 +98,8 @@ describe('creation of a new blog entry', () => {
 
 describe('update of a blog entry', () => {
   test('a blog can be updated', async () => {
+    const token = await helper.login();
+    const blogId = await helper.createBlogWithId(token);
     const update = {
       title: 'React patterns 2.0',
       author: 'Mark Chan',
@@ -110,16 +108,21 @@ describe('update of a blog entry', () => {
     };
 
     const blogsAtStart = await helper.blogsInDb();
-    const blogToUpdate = blogsAtStart[0];
 
-    const updatedBlog = await api.put(`/api/blogs/${blogToUpdate.id}`).send(update).expect(200);
-    expect(updatedBlog.body.id).toBe(blogToUpdate.id);
+    const updatedBlog = await api
+      .put(`/api/blogs/${blogId}`)
+      .set('Authorization', `bearer ${token}`)
+      .send(update)
+      .expect(200);
+    expect(updatedBlog.body.id).toBe(blogId);
 
     const blogsAtEnd = await helper.blogsInDb();
     titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain(update.title);
   });
   test('extra properties are not added', async () => {
+    const token = await helper.login();
+    const blogId = await helper.createBlogWithId(token);
     const update = {
       title: 'React patterns 2.0',
       author: 'Mark Chan',
@@ -129,26 +132,62 @@ describe('update of a blog entry', () => {
     };
 
     const blogsAtStart = await helper.blogsInDb();
-    const blogToUpdate = blogsAtStart[0];
 
-    await api.put(`/api/blogs/${blogToUpdate.id}`).send(update).expect(200);
+    await api
+      .put(`/api/blogs/${blogId}`)
+      .set('Authorization', `bearer ${token}`)
+      .send(update)
+      .expect(200);
 
     const blogsAtEnd = await helper.blogsInDb();
     blogsAtEnd.forEach((blog) => expect(blog).not.toHaveProperty('extraField'));
+  });
+  test('will fail if valid token not provided', async () => {
+    const token = await helper.login();
+    const blogId = await helper.createBlogWithId(token);
+    const update = {
+      title: 'React patterns 2.0',
+      author: 'Mark Chan',
+      url: 'https://updatedreactpatterns.com/',
+      likes: 8,
+      extraField: 'extra',
+    };
+
+    await api
+      .put(`/api/blogs/${blogId}`)
+      .set('Authorization', 'bearer 12345')
+      .send(update)
+      .expect(401);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).not.toContain(update.title);
   });
 });
 
 describe('deletion of a blog entry', () => {
   test('a blog can be deleted', async () => {
+    const token = await helper.login();
+    const blogId = await helper.createBlogWithId(token);
     const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const blogToDelete = blogsAtStart.at(-1);
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api.delete(`/api/blogs/${blogId}`).set('Authorization', `bearer ${token}`).expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
 
     const title = blogsAtEnd.map((r) => r.title);
     expect(title).not.toContain(blogToDelete.title);
+  });
+  test('will fail if valid token not provided', async () => {
+    const token = await helper.login();
+    const blogId = await helper.createBlogWithId(token);
+    const blogsAtStart = await helper.blogsInDb();
+
+    await api.delete(`/api/blogs/${blogId}`).set('Authorization', 'bearer 12345').expect(401);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
   });
 });

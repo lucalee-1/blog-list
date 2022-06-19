@@ -1,3 +1,7 @@
+const bcrypt = require('bcrypt');
+const supertest = require('supertest');
+const app = require('../app');
+const api = supertest(app);
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
@@ -62,8 +66,43 @@ const usersInDb = async () => {
   return users.map((u) => u.toJSON());
 };
 
+const login = async () => {
+  await User.deleteMany({});
+  const passwordHash = await bcrypt.hash('sekret', 10);
+  const user = new User({ username: 'default', passwordHash });
+  await user.save();
+
+  const loginData = {
+    username: 'default',
+    password: 'sekret',
+  };
+  const res = await api.post('/api/login').send(loginData);
+  const token = res.body.token;
+
+  return token;
+};
+
+const createBlogWithId = async (token) => {
+  const newBlog = {
+    title: 'React is cool',
+    author: 'Lee',
+    url: 'https://reactiscool.com/',
+    likes: 10,
+  };
+
+  const createdBlog = await api
+    .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
+    .send(newBlog);
+
+  const blogId = createdBlog.body.id;
+  return blogId;
+};
+
 module.exports = {
   initialBlogs,
   blogsInDb,
   usersInDb,
+  login,
+  createBlogWithId,
 };
