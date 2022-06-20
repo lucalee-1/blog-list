@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const errorHandler = (error, req, res, next) => {
   console.log(error.message);
 
@@ -13,7 +15,7 @@ const errorHandler = (error, req, res, next) => {
     return res.status(401).json({
       error: 'token expired',
     });
-  } 
+  }
   next(error);
 };
 
@@ -24,13 +26,23 @@ const unknownEndpoint = (req, res) => {
 const getTokenFrom = (req, res, next) => {
   const authorization = req.get('authorization');
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-  req.token = authorization.substring(7);    
+    req.token = authorization.substring(7);
   }
+  next();
+};
+
+const userExtractor = (req, res, next) => {
+  const user = jwt.verify(req.token, process.env.SECRET);
+  if (!user.id) {
+    return res.status(401).json({ error: 'token missing or invalid' });
+  }
+  req.user = user;
   next();
 };
 
 module.exports = {
   errorHandler,
   unknownEndpoint,
-  getTokenFrom
+  getTokenFrom,
+  userExtractor,
 };

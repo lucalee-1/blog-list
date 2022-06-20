@@ -1,5 +1,5 @@
 const blogsRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
+const { userExtractor  } = require('../utils/middleware');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
@@ -12,13 +12,9 @@ blogsRouter.get('/', async (req, res, next) => {
   }
 });
 
-blogsRouter.post('/', async (req, res, next) => {
-  try {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return res.status(401).json({ error: 'token missing or invalid' });
-    }
-    const user = await User.findById(decodedToken.id);
+blogsRouter.post('/', userExtractor, async (req, res, next) => {
+  try {   
+    const user = await User.findById(req.user.id);
 
     const blog = new Blog({
       title: req.body.title,
@@ -50,20 +46,19 @@ blogsRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-blogsRouter.put('/:id', async (req, res, next) => {
+blogsRouter.put('/:id', userExtractor, async (req, res, next) => {
   const blogContent = {
     title: req.body.title,
     author: req.body.author,
     url: req.body.url,
     likes: req.body.likes || '0',
   };
-  try {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return res.status(401).json({ error: 'token missing or invalid' });
-    }
+  try {   
     const blog = await Blog.findById(req.params.id);
-    if (blog.user.toString() !== decodedToken.id) {
+    if (!blog) {
+      return res.status(404).end();
+    }
+    if (blog.user.toString() !== req.user.id) {
       return res
         .status(401)
         .json({ error: 'wrong user, only the original creator can edit a blog' });
@@ -79,17 +74,13 @@ blogsRouter.put('/:id', async (req, res, next) => {
   }
 });
 
-blogsRouter.delete('/:id', async (req, res, next) => {
-  try {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return res.status(401).json({ error: 'token missing or invalid' });
-    }
+blogsRouter.delete('/:id', userExtractor, async (req, res, next) => {
+  try {    
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(204).end();
     }
-    if (blog.user.toString() !== decodedToken.id) {
+    if (blog.user.toString() !== req.user.id) {
       return res
         .status(401)
         .json({ error: 'wrong user, only the original creator can delete a blog' });
