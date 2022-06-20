@@ -6,7 +6,7 @@ const app = express();
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login')
-const { unknownEndpoint, errorHandler } = require('./utils/middleware');
+const { errorHandler, unknownEndpoint, getTokenFrom  } = require('./utils/middleware');
 
 const connectDB = async () => {
   try {
@@ -20,6 +20,7 @@ connectDB();
 
 app.use(cors());
 app.use(express.json());
+app.use(getTokenFrom)
 
 app.get('/', (req, res) => {
   res.send(`<p>Supported routes are: /api/blogs, /api/users, /api/login </p>`)
