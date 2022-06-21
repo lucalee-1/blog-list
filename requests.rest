@@ -1,29 +1,30 @@
 post http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwMjI1MX0.rhUAdQ9lsHlu8Unz1fqb8sVtD7Px7_boGyXY9l9yKKU
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaWQiOiI2MmIwM2NiYWZmNjE1MzhjYmRhOWQ1OWYiLCJpYXQiOjE2NTU3MTcwNzN9.Hf1_D2z8WALFU-VJF0cOQ9zToh1XZSx-2dGQ-gPsad8
 
 {
-"title": "my authorized post 3",
-"author": "Me 2",
-"url": "me.com"
+"title": "Promises chaining",
+"author": "The Modern JavaScript Tutorial",
+"url": "https://javascript.info/promise-chaining",
+"likes": 8
 }
 
 ###
 
-get http://localhost:3001/api/blogs/
+get http://localhost:3001/api/blogs/62b0372983d8f42a44a005de
 
 
 ###
-put http://localhost:3001/api/blogs/62ae7c89d19bb007169b8c01
+put http://localhost:3001/api/blogs/62b0372983d8f42a44a005de
 Content-Type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYxMDkzOH0.4G9maRYLKnojxQDdwZEo4IZEwXNwZtVVSwA2q09-_bM
 
-{"title": "my edited post"}
+{"title": "my edited post 555"}
 
 
 ###
-delete http://localhost:3001/api/blogs/62ae7ff2641fe3e982cc1d7d
-Authorization: bearer eybGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYwNDMwNH0.pEUtgQkMmWnJGuIQVsi2fFNG-0Jnbb0tA9KtoulBNBU
+delete http://localhost:3001/api/blogs/62b03ce5ff61538cbda9d5a3
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikd1ZXN0IiwiaWQiOiI2MmIwM2NiYWZmNjE1MzhjYmRhOWQ1OWYiLCJpYXQiOjE2NTU3MTcwNzN9.Hf1_D2z8WALFU-VJF0cOQ9zToh1XZSx-2dGQ-gPsad8
 
 
 ### 
@@ -31,9 +32,9 @@ post http://localhost:3001/api/users
 Content-Type: application/json
 
  {
- "username": "valid user2",
- "name": "Valid user",
- "password": "user1password"
+ "username": "Guest",
+ "name": "Guest",
+ "password": "guestpassword1"
  }
 
 ###
@@ -44,6 +45,6 @@ post http://localhost:3001/api/login
 Content-Type: application/json
 
  {
- "username": "valid user",
- "password": "user1password"
+ "username": "Guest",
+ "password": "guestpassword1"
  }
