@@ -47,10 +47,7 @@ blogsRouter.get('/:id', async (req, res, next) => {
 });
 
 blogsRouter.put('/:id', userExtractor, async (req, res, next) => {
-  const blogContent = {
-    title: req.body.title,
-    author: req.body.author,
-    url: req.body.url,
+  const blogContent = {   
     likes: req.body.likes,
   };
   try {   
