@@ -51,18 +51,18 @@ blogsRouter.put('/:id', userExtractor, async (req, res, next) => {
     title: req.body.title,
     author: req.body.author,
     url: req.body.url,
-    likes: req.body.likes || '0',
+    likes: req.body.likes,
   };
   try {   
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) {
-      return res.status(404).end();
-    }
-    if (blog.user.toString() !== req.user.id) {
-      return res
-        .status(401)
-        .json({ error: 'wrong user, only the original creator can edit a blog' });
-    }
+    // const blog = await Blog.findById(req.params.id);
+    // if (!blog) {
+    //   return res.status(404).end();
+    // }
+    // if (blog.user.toString() !== req.user.id) {
+    //   return res
+    //     .status(401)
+    //     .json({ error: 'wrong user, only the original creator can edit a blog' });
+    // }
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blogContent, {
       new: true,
       runValidators: true,

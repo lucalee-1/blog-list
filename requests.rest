@@ -31,10 +31,10 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikd1Z
 post http://localhost:3001/api/users
 Content-Type: application/json
 
- {
- "username": "Guest",
- "name": "Guest",
- "password": "guestpassword1"
+{
+ "username": "star",
+ "name": "Star",
+ "password": "123"
  }
 
 ###
