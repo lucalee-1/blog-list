@@ -36,7 +36,7 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
 
 blogsRouter.get('/:id', async (req, res, next) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(req.params.id).populate('user', { username: 1, name: 1, id: 1 });
     if (!blog) {
       return res.status(404).end();
     }
