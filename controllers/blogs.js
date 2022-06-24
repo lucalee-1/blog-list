@@ -16,6 +16,8 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
   try {   
     const user = await User.findById(req.user.id);
 
+    console.log('User', user)
+
     const blog = new Blog({
       title: req.body.title,
       author: req.body.author,
@@ -25,6 +27,7 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
     });
 
     const savedBlog = await blog.save();
+    console.log(savedBlog)
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
 
