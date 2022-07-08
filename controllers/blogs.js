@@ -1,5 +1,5 @@
 const blogsRouter = require('express').Router();
-const { userExtractor  } = require('../utils/middleware');
+const { userExtractor } = require('../utils/middleware');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
@@ -13,10 +13,10 @@ blogsRouter.get('/', async (req, res, next) => {
 });
 
 blogsRouter.post('/', userExtractor, async (req, res, next) => {
-  try {   
+  try {
     const user = await User.findById(req.user.id);
 
-    console.log('User', user)
+    console.log('User', user);
 
     const blog = new Blog({
       title: req.body.title,
@@ -27,7 +27,7 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
     });
 
     const savedBlog = await blog.save();
-    console.log(savedBlog)
+    console.log(savedBlog);
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
 
@@ -39,7 +39,11 @@ blogsRouter.post('/', userExtractor, async (req, res, next) => {
 
 blogsRouter.get('/:id', async (req, res, next) => {
   try {
-    const blog = await Blog.findById(req.params.id).populate('user', { username: 1, name: 1, id: 1 });
+    const blog = await Blog.findById(req.params.id).populate('user', {
+      username: 1,
+      name: 1,
+      id: 1,
+    });
     if (!blog) {
       return res.status(404).end();
     }
@@ -50,10 +54,10 @@ blogsRouter.get('/:id', async (req, res, next) => {
 });
 
 blogsRouter.put('/:id', userExtractor, async (req, res, next) => {
-  const blogContent = {   
+  const blogContent = {
     likes: req.body.likes,
   };
-  try {   
+  try {
     // const blog = await Blog.findById(req.params.id);
     // if (!blog) {
     //   return res.status(404).end();
@@ -75,7 +79,7 @@ blogsRouter.put('/:id', userExtractor, async (req, res, next) => {
 });
 
 blogsRouter.delete('/:id', userExtractor, async (req, res, next) => {
-  try {    
+  try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
       return res.status(204).end();
@@ -87,6 +91,24 @@ blogsRouter.delete('/:id', userExtractor, async (req, res, next) => {
     }
     await Blog.findByIdAndDelete(req.params.id);
     res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogsRouter.put('/:id/comments', userExtractor, async (req, res, next) => {
+  const comment = req.body.comment;
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $push: { comments: comment } },
+      {
+        new: true,
+        runValidators: true,
+        context: 'query',
+      }
+    );
+    res.json(updatedBlog);
   } catch (error) {
     next(error);
   }
