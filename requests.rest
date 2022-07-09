@@ -11,7 +11,7 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikd1Z
 
 ###
 
-get http://localhost:3001/api/blogs/62b0372983d8f42a44a005de
+get http://localhost:3005/api/blogs/62b180e3d7d80f11a6e8431d
 
 
 ###
@@ -32,9 +32,9 @@ post http://localhost:3005/api/users
 Content-Type: application/json
 
 {
- "username": "minsoo",
- "name": "Min Soo Kim",
- "password": "minsoopw"
+ "username": "hyeri",
+ "name": "Hyeri",
+ "password": "hyeripw"
  }
 
 ###
@@ -48,3 +48,13 @@ Content-Type: application/json
  "username": "Guest",
  "password": "guestpassword1"
  }
+
+###
+put http://localhost:3005/api/blogs/62b180e3d7d80f11a6e8431d/comments
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIiLCJpZCI6IjYyYWU3YzQxNWY1OGU2NzUyYzdlYWY2NCIsImlhdCI6MTY1NTYxMDkzOH0.4G9maRYLKnojxQDdwZEo4IZEwXNwZtVVSwA2q09-_bM
+
+{"comment": "Very helpful. Thanks for sharing!"}
+
+
+
