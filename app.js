@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/testing', testingRouter);
 }
 
-app.use(unknownEndpoint);
+// app.use(unknownEndpoint);
 app.use(errorHandler);
 
 module.exports = app;
